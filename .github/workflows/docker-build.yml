@@ -1,3 +1,4 @@
+
 name: Build and Push Docker Image
 
 on:
@@ -16,23 +17,12 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.santhoshchokkalingam
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
- }}
-          password: ${{ secrets.santhoshchokkalingam
-
- }}
-
-
-
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.santhoshchokkalingam
-
- }}/node-cicd-app:latest .
-
-      - name: Push Docker image
-        run: |
-          docker push ${{ secrets.santhoshchokkalingam
-
- }}/node-cicd-app:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/node-cicd-app:latest
