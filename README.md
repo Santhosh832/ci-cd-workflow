@@ -1,335 +1,451 @@
-# Node.js CI/CD Pipeline with Docker & GitHub Actions
 
-## 📌 Project Overview
+# 🚀 Node.js CI/CD Pipeline with GitHub Actions, Jenkins & Docker
 
-This project demonstrates a basic **CI/CD pipeline for a Node.js application** using **GitHub Actions and Docker**.
+A hands-on DevOps project demonstrating **Continuous Integration and Continuous Deployment (CI/CD)** for a Node.js application using **GitHub Actions, Jenkins, and Docker**.
 
-Whenever new code is pushed to the `main` branch, GitHub Actions automatically:
+This project contains two CI/CD implementations in the same GitHub repository:
 
-1. Checks out the source code
-2. Logs in securely to Docker Hub
-3. Builds a Docker image
-4. Pushes the Docker image to Docker Hub
+* **Task 1:** CI/CD using GitHub Actions + Docker
+* **Task 2:** CI/CD using Jenkins + Docker
 
-This project demonstrates practical DevOps concepts including **Git, GitHub, Docker, containerization, CI/CD, GitHub Actions, and Docker Hub**.
+The purpose of this project is to understand how modern DevOps tools can automate application building, containerization, and deployment.
 
 ---
 
-## 🏗️ Architecture
+## 📌 Project Overview
+
+The application is a simple Node.js web application containerized using Docker.
+
+Two separate CI/CD pipelines were implemented:
 
 ```text
-Developer
-    │
-    │ git push
-    ▼
-GitHub Repository
-    │
-    │ GitHub Actions Trigger
-    ▼
-GitHub Actions
-    │
-    ├── Checkout Source Code
-    │
-    ├── Docker Hub Login
-    │
-    ├── Build Docker Image
-    │
-    └── Push Docker Image
-    │
-    ▼
-Docker Hub
-    │
-    │ docker pull
-    ▼
-Docker Container
-    │
-    ▼
-Node.js Application
+                    GitHub Repository
+                           │
+                           │
+              ┌────────────┴────────────┐
+              │                         │
+              ▼                         ▼
+       GitHub Actions                Jenkins
+          Task 1                     Task 2
+              │                         │
+              ▼                         ▼
+       Docker Build                Docker Build
+              │                         │
+              ▼                         ▼
+       Docker Image               Docker Image
+              │                         │
+              ▼                         ▼
+          Deployment               Deployment
 ```
 
 ---
 
-## 🛠️ Technologies Used
+# 🛠️ Technologies Used
 
-| Technology     | Purpose                      |
-| -------------- | ---------------------------- |
-| Node.js        | Application runtime          |
-| npm            | Package management           |
-| Git            | Version control              |
-| GitHub         | Source code repository       |
-| Docker         | Application containerization |
-| Docker Hub     | Docker image registry        |
-| GitHub Actions | CI/CD automation             |
+| Technology     | Purpose                       |
+| -------------- | ----------------------------- |
+| Node.js        | Application runtime           |
+| Docker         | Application containerization  |
+| Git            | Version control               |
+| GitHub         | Source code management        |
+| GitHub Actions | CI/CD automation – Task 1     |
+| Jenkins        | CI/CD automation – Task 2     |
+| Docker Hub     | Container image registry      |
+| PowerShell     | Local development environment |
 
 ---
 
-## 📁 Project Structure
+# 📂 Project Structure
 
 ```text
-node-cicd-app/
+ci-cd-nodejs-app/
 │
 ├── .github/
 │   └── workflows/
 │       └── docker-build.yml
 │
-├── .dockerignore
-├── .gitignore
 ├── Dockerfile
+├── .dockerignore
+├── Jenkinsfile
+├── README.md
 ├── package.json
 ├── package-lock.json
-├── server.js
-└── README.md
+└── server.js
 ```
 
 ---
 
-## 🚀 Application Setup
+# 🎯 Task 1 — GitHub Actions CI/CD
 
-### Prerequisites
+## Objective
 
-Install the following:
+Automate the application build and Docker image creation using **GitHub Actions**.
 
-* Node.js
-* npm
-* Git
-* Docker
-* GitHub account
-* Docker Hub account
-
----
-
-## ▶️ Run the Application Locally
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Santhosh832/ci-cd-workflow.git
-```
-
-Go to the project directory:
-
-```bash
-cd ci-cd-workflow
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the application:
-
-```bash
-node server.js
-```
-
-Open your browser:
+## CI/CD Flow
 
 ```text
-http://localhost:3000
+Developer
+    │
+    ▼
+Git Push
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Checkout Code
+    ├── Setup Node.js
+    ├── Install Dependencies
+    ├── Build Docker Image
+    └── Push Docker Image
+    │
+    ▼
+Docker Hub
 ```
 
----
+## GitHub Actions Workflow
 
-## 🐳 Run with Docker
-
-### Build the Docker image
-
-```bash
-docker build -t node-cicd-app:latest .
-```
-
-### Run the container
-
-```bash
-docker run -d -p 3000:3000 --name node-cicd-container node-cicd-app:latest
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-### Check running containers
-
-```bash
-docker ps
-```
-
-### View container logs
-
-```bash
-docker logs node-cicd-container
-```
-
-### Stop the container
-
-```bash
-docker stop node-cicd-container
-```
-
-### Remove the container
-
-```bash
-docker rm node-cicd-container
-```
-
----
-
-# 🔄 CI/CD Pipeline
-
-The CI/CD workflow is located at:
+The workflow is stored at:
 
 ```text
 .github/workflows/docker-build.yml
 ```
 
-The workflow is triggered whenever code is pushed to the `main` branch.
+The workflow automatically runs when changes are pushed to the repository.
 
-```yaml
-on:
-  push:
-    branches:
-      - main
-```
+### Main Steps
 
-### Pipeline Steps
+1. Checkout source code
+2. Set up Node.js
+3. Install application dependencies
+4. Build the Docker image
+5. Authenticate with Docker Hub
+6. Push the image to Docker Hub
 
-#### 1. Checkout Code
+---
 
-GitHub Actions retrieves the latest source code.
+# 🎯 Task 2 — Jenkins CI/CD
 
-```yaml
-uses: actions/checkout@v4
-```
+## Objective
 
-#### 2. Login to Docker Hub
+Create a Jenkins pipeline to automatically build and deploy the Node.js application using Docker.
 
-Docker Hub credentials are stored as GitHub repository secrets.
+## Jenkins Pipeline Flow
 
 ```text
-DOCKERHUB_USERNAME
-DOCKERHUB_TOKEN
-```
-
-The credentials are not hard-coded in the workflow.
-
-#### 3. Build Docker Image
-
-GitHub Actions builds the Docker image using the project's `Dockerfile`.
-
-#### 4. Push Image to Docker Hub
-
-The generated image is pushed to:
-
-```text
-YOUR_DOCKERHUB_USERNAME/node-cicd-app:latest
+GitHub
+   │
+   ▼
+Jenkins
+   │
+   ├── Checkout
+   │
+   ├── Build Docker Image
+   │
+   ├── Stop Previous Container
+   │
+   └── Deploy New Container
+   │
+   ▼
+Docker
+   │
+   ▼
+Node.js Application
 ```
 
 ---
 
-## 🔐 GitHub Secrets
+## Jenkinsfile
 
-The following repository secrets are required:
+The Jenkins pipeline is defined in:
 
 ```text
-DOCKERHUB_USERNAME
-DOCKERHUB_TOKEN
+Jenkinsfile
 ```
 
-### DOCKERHUB_USERNAME
+### Pipeline Stages
 
-Your Docker Hub username.
+### 1. Checkout
 
-### DOCKERHUB_TOKEN
+Jenkins pulls the source code from the `main` branch.
 
-A Docker Hub Personal Access Token used by GitHub Actions for authentication.
+```groovy
+stage('Checkout') {
+    steps {
+        git branch: 'main',
+            url: 'https://github.com/Santhosh832/ci-cd-workflow.git'
+    }
+}
+```
 
-**Never commit credentials, passwords, or access tokens to the repository.**
+### 2. Build Docker Image
+
+```groovy
+stage('Build Docker Image') {
+    steps {
+        sh 'docker build -t ci-cd-nodejs-app:jenkins .'
+    }
+}
+```
+
+### 3. Stop Previous Container
+
+```groovy
+stage('Stop Old Container') {
+    steps {
+        sh 'docker stop jenkins-nodejs-app || true'
+        sh 'docker rm jenkins-nodejs-app || true'
+    }
+}
+```
+
+### 4. Deploy Application
+
+```groovy
+stage('Deploy Application') {
+    steps {
+        sh 'docker run -d --name jenkins-nodejs-app -p 3001:3000 ci-cd-nodejs-app:jenkins'
+    }
+}
+```
 
 ---
 
-## 📦 Docker Image
+# 🐳 Docker
 
-After a successful GitHub Actions run, the Docker image is available in Docker Hub.
+The Node.js application is packaged using Docker.
 
-Pull the image using:
+### Build Image
 
 ```bash
-docker pull YOUR_DOCKERHUB_USERNAME/node-cicd-app:latest
+docker build -t ci-cd-nodejs-app .
 ```
 
-Run it:
+### Run Container
 
 ```bash
-docker run -d -p 3000:3000 YOUR_DOCKERHUB_USERNAME/node-cicd-app:latest
+docker run -d -p 3000:3000 ci-cd-nodejs-app
 ```
 
----
-
-## ✅ CI/CD Workflow Result
-
-A successful workflow should show:
+The application listens on:
 
 ```text
-✓ Checkout code
-✓ Log in to Docker Hub
-✓ Build and push Docker image
+Container Port: 3000
 ```
 
-The Docker image is then available in Docker Hub.
+For the Jenkins deployment:
+
+```text
+Host Port: 3001
+Container Port: 3000
+```
+
+Application:
+
+```text
+http://localhost:3001
+```
 
 ---
 
-## 🎯 DevOps Concepts Demonstrated
+# ⚙️ Jenkins Environment
 
-This project demonstrates:
+Jenkins was configured using Docker.
 
-* Git version control
-* GitHub repository management
-* Git branching
-* Dockerfile creation
+### Jenkins Dashboard
+
+```text
+http://localhost:8081
+```
+
+### Jenkins Pipeline Job
+
+```text
+ci-cd-nodejs-jenkins
+```
+
+### Application
+
+```text
+http://localhost:3001
+```
+
+Jenkins uses a Docker-in-Docker environment to build and deploy the application container.
+
+```text
+Jenkins
+   │
+   ▼
+Docker-in-Docker
+   │
+   ▼
+ci-cd-nodejs-app:jenkins
+   │
+   ▼
+jenkins-nodejs-app
+```
+
+---
+
+# ✅ Pipeline Verification
+
+The Jenkins pipeline completed successfully with:
+
+```text
+Finished: SUCCESS
+```
+
+The deployed container can be verified using:
+
+```powershell
+docker exec jenkins-docker docker ps
+```
+
+Expected container:
+
+```text
+jenkins-nodejs-app
+```
+
+Port mapping:
+
+```text
+3001 → 3000
+```
+
+---
+
+# 🌐 Application Output
+
+After successful deployment, the application displays:
+
+```text
+CI/CD Deployment Successful 🚀
+
+Node.js + Docker + GitHub Actions + Docker Hub + AWS EC2
+```
+
+---
+
+# 🔄 CI/CD Comparison
+
+| Feature                | Task 1         | Task 2      |
+| ---------------------- | -------------- | ----------- |
+| CI/CD Tool             | GitHub Actions | Jenkins     |
+| Source Control         | GitHub         | GitHub      |
+| Containerization       | Docker         | Docker      |
+| Docker Image           | Yes            | Yes         |
+| Automated Build        | Yes            | Yes         |
+| Deployment             | Docker         | Docker      |
+| Pipeline Configuration | YAML           | Jenkinsfile |
+| Pipeline as Code       | Yes            | Yes         |
+
+---
+
+# 🧠 DevOps Concepts Practiced
+
+This project provided hands-on experience with:
+
+* CI/CD
+* Git and GitHub
+* GitHub Actions
+* Jenkins
+* Jenkins Pipeline
+* Jenkinsfile
+* Docker
+* Dockerfile
 * Docker image creation
 * Docker containers
-* Docker Hub image registry
-* GitHub Actions
-* CI/CD automation
-* GitHub Secrets
-* Automated Docker image publishing
+* Docker Hub
+* Docker-in-Docker
+* Port mapping
+* Pipeline troubleshooting
+* Application deployment
+* Infrastructure automation
 
 ---
 
-## 🔮 Future Improvements
+# 🐛 Troubleshooting Experience
 
-The pipeline can be extended to include:
+During the project, several real-world DevOps issues were encountered and resolved, including:
 
-* Automated deployment to AWS EC2
-* AWS ECR
+### Jenkins Port Conflict
+
+Jenkins was configured on:
+
+```text
+8081 → 8080
+```
+
+### Docker-in-Docker Networking
+
+The Jenkins Docker daemon required proper network and port configuration.
+
+### Application Port Exposure
+
+The application was deployed internally through Docker-in-Docker and required port forwarding to make it accessible from the Windows host.
+
+### Git Synchronization
+
+Local and remote Git histories were synchronized using Git rebase before pushing changes.
+
+These troubleshooting steps provided practical experience with debugging CI/CD infrastructure.
+
+---
+
+# 📈 Future Improvements
+
+The project can be extended with:
+
+* GitHub Webhook → Jenkins automatic triggering
+* Docker Hub automated image publishing from Jenkins
+* Automated unit testing
+* SonarQube integration
+* Trivy security scanning
+* AWS EC2 deployment
 * Kubernetes deployment
-* Docker Compose
-* Infrastructure provisioning with Terraform
-* Automated testing
-* Security scanning
 * Prometheus monitoring
 * Grafana dashboards
-* Blue/Green deployment
-* Production and development environments
+* Slack notifications
+* Email notifications
+* Blue-Green deployment
+* Rolling deployment
+* Automated rollback
 
 ---
 
-## 👨‍💻 Author
+# 🔗 GitHub Repository
+
+**Repository:**
+
+https://github.com/Santhosh832/ci-cd-workflow
+
+---
+
+# 👨‍💻 Author
 
 **C. Santhosh**
 
 B.Tech – Information Technology
 
+Aspiring DevOps Engineer
+
 GitHub:
+
 https://github.com/Santhosh832
 
 ---
 
-## 📄 License
+# ⭐ Project Status
 
-This project is created for learning and demonstrating DevOps and CI/CD practices.
+```text
+Task 1 — GitHub Actions CI/CD       ✅ COMPLETED
+Task 2 — Jenkins + Docker CI/CD     ✅ COMPLETED
+Docker Containerization              ✅ COMPLETED
+Jenkins Deployment                   ✅ COMPLETED
+GitHub Integration                   ✅ COMPLETED
+```
+
+## 🚀 Overall Status: COMPLETED
